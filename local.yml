@@ -1,0 +1,92 @@
+version: "3.9"
+
+# running services not as a root user, but we create new one - invoice
+services:
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./docker/local/express/Dockerfile
+    # this means - don't override this folder in the container with the local one
+    volumes:
+      # this means don't override this folder in the container with the local one:
+      - /app/node_modules
+      # map the current dir to /app inside the container - working directory
+      # without this we have to rebuild image every time we change to the source code
+      - .:/app
+    depends_on:
+      - mongodb
+    ports:
+      - "1997:1997"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      # this is the connection string to a mongodb instance
+      # @mongodb - this is the name of the database service we declare
+      MONGO_URI: mongodb://${MONGO_ROOT_USERNAME}:${MONGO_ROOT_PASSWORD}@mongodb
+      # this variable ensures that chalk also works within Docker container:
+      FORCE_COLOR: 1
+    networks:
+      # the name is up to us if we don't specify, the container will run on the default network
+      # we don't want that, we want them to run on specific network, but why?
+      - invoice
+
+  mongodb:
+    image: mongo:5.0.6-focal
+    restart: always
+    ports:
+      - "27017:27017"
+    # These variables, used in conjunction, create a new user and set that user's password.
+    # This user is created in the admin authentication database and given the role of root, which is a "superuser" role.
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    volumes:
+      # /data/db - default dir on our container
+      - mongodb-data:/data/db
+    # we want the containers to run on the same network
+    networks:
+      - invoice
+
+  # with mongo-express json documents are passed through js virtual machine
+  # should be used only privately for development, cause can spin malicious software
+  # it provides gui to interact with mongodb server
+  mongo-express:
+    image: mongo-express:0.54.0
+    depends_on:
+      - mongodb
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD}
+      # this is the name of our service:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      # with these we log in to Mongo Express in the browser
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123456
+    networks:
+      - invoice
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      # this port is for the mail interface of mailhog
+      - "8025:8025"
+      # this one is for the Simple Mail Transfer Protocol
+      - "1025:1025"
+    networks:
+      - invoice
+
+# When you start Docker, a default bridge network (also called bridge) is created automatically,
+# and newly-started containers connect to it unless otherwise specified.
+# A bridge network uses a software bridge which allows containers connected to the same bridge network
+# to communicate, while providing isolation from containers which are not connected to that bridge network.
+# Bridge networks apply to containers running on the same Docker daemon host.
+# For communication among containers running on different Docker daemon hosts,
+# you can either manage routing at the OS level, or you can use an overlay network.
+networks:
+  invoice:
+    driver: bridge
+
+volumes:
+  mongodb-data:
