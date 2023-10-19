@@ -1,5 +1,4 @@
 version: "3.9"
-
 # running services not as a root user, but we create new one - invoice
 services:
   api:
@@ -16,8 +15,9 @@ services:
       - .:/app
     depends_on:
       - mongodb
-    ports:
-      - "1997:1997"
+    # we no longer need ports, since we are using Nginx proxy:
+    # ports:
+    #   - "1997:1997"
     environment:
       NODE_ENV: ${NODE_ENV}
       # this is the connection string to a mongodb instance
@@ -28,6 +28,22 @@ services:
     networks:
       # the name is up to us if we don't specify, the container will run on the default network
       # we don't want that, we want them to run on specific network, but why?
+      - invoice
+
+  # try add WDS_SOCKET_PORT=0 to docker-compose file for hot reload
+  client:
+    build:
+      context: ./client
+      dockerfile: ./docker/local/Dockerfile
+    restart: on-failure
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    # Values set in the shell environment override those set in the .env file, the environment attribute, and the env_file attribute.
+    environment:
+      - WDS_SOCKET_PORT=0
+      - CHOKIDAR_USEPOLLING=true
+    networks:
       - invoice
 
   mongodb:
@@ -77,6 +93,26 @@ services:
     networks:
       - invoice
 
+  # Nginx is web server reverse proxy and a load balancer
+  # A reverse proxy is server that sits in front other servers
+  nginx:
+    build:
+      context: ./docker/local/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - api
+    volumes:
+      - static_volume:/app/staticfiles
+      - pdf_volume:/app/docs
+    # volumes probably not working on Windows, may or may not be fixed with CHOKIDAR_USEPOLLING=true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - invoice
+
 # When you start Docker, a default bridge network (also called bridge) is created automatically,
 # and newly-started containers connect to it unless otherwise specified.
 # A bridge network uses a software bridge which allows containers connected to the same bridge network
@@ -90,3 +126,5 @@ networks:
 
 volumes:
   mongodb-data:
+  static_volume:
+  pdf_volume:
