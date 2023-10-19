@@ -3,9 +3,13 @@ import chalk from "chalk";
 import express from "express";
 import cookieParser from "cookie-parser";
 import morgan from "morgan";
-import cors from "cors";
+// import cors from "cors";
 // since we are using ES modules - we have to add .js extension
+import connectionToDB from "./config/connectDb.js";
 import { morganMiddleware, systemLogs } from "./utils/Logger.js";
+import mongoSanitize from "express-mongo-sanitize";
+
+await connectionToDB();
 
 const app = express();
 
@@ -17,8 +21,12 @@ app.use(express.json());
 // that would stop us from sending nested objects
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors());
-
+// app.use(cors());
+// Object keys starting with $ or containing a period are reserved for use by
+// MongoDB as operators. Without sanitization malicious users could send such objects,
+// and change the context of the database operation
+// Most notorious is the $where operator, which can execute arbitrary JavaScript on the database
+app.use(mongoSanitize());
 app.use(morganMiddleware);
 
 app.get("/api/v1/test", (req, res) => {
