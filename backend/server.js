@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json());
+app.use(express.json());  
 // that would stop us from sending nested objects
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
