@@ -22,12 +22,14 @@ const sendEmail = async (email, subject, payload, template) => {
       html: compiledTemplate(payload),
     };
 
-    await transporter.sendEmail(emailOptions);
+    await transporter.sendMail(emailOptions);
   } catch (err) {
     console.error(err);
     systemLogs.error(`email not send: ${error}`);
   }
 };
+
+export default sendEmail;
 
 // (alias) fileURLToPath(url: string | URL): string (+1 overload)
 // import fileURLToPath

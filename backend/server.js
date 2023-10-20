@@ -9,6 +9,7 @@ import connectionToDB from "./config/connectDb.js";
 import { morganMiddleware, systemLogs } from "./utils/Logger.js";
 import mongoSanitize from "express-mongo-sanitize";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import authRoutes from "./routes/authRoutes.js";
 
 await connectionToDB();
 
@@ -18,7 +19,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json());  
+app.use(express.json());
 // that would stop us from sending nested objects
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -33,6 +34,8 @@ app.use(morganMiddleware);
 app.get("/api/v1/test", (req, res) => {
   res.json({ Hi: "Hello from the Invoice app!!!!" });
 });
+
+app.use("/api/v1/auth", authRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

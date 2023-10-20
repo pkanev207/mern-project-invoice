@@ -11,9 +11,19 @@
             "hash": "7f50662bfcad41494c712729294e2224e8ba6f3703af5fbed58080166f03b99e"
         },
         {
-            "date": 1697710279969,
-            "name": "logs/combined-2023-10-19.log",
-            "hash": "ae348b89cb690ffcb3af8c3be9094489172e886bd68c70e8d39cb791d8aa276c"
+            "date": 1697728720459,
+            "name": "logs\\combined-2023-10-19.log",
+            "hash": "f68b28a7951daf278e0ac569f94fca1f2c46c60a416b77078b5eeac77b3b250c"
+        },
+        {
+            "date": 1697794686346,
+            "name": "logs\\combined-2023-10-20.log",
+            "hash": "814c1a3d9cf19f1a6213cdc9bc9e6bb783e158ab3655d68c8e521db3da0be051"
+        },
+        {
+            "date": 1697815795663,
+            "name": "logs/combined-2023-10-20.log",
+            "hash": "0506aa5b836c130dd04742b0a008013b4578a2841b973ec31048b61a9e55bba8"
         }
     ],
     "hashType": "sha256"
