@@ -2,15 +2,13 @@ import asyncHandler from "express-async-handler";
 import User from "../../models/userModel.js";
 import VerificationToken from "../../models/verifyResetTokenModel.js";
 import sendEmail from "../../utils/sendEmail.js";
-import crypto from "crypto";
-const { randomBytes } = crypto;
-// const { randomBytes } = await import("crypto");
+import { randomBytes } from "crypto";
+
 const domainURL = process.env.DOMAIN;
 
 // $-title   Register User and send email verification link
 // $-path    POST /api/v1/auth/register
 // $-auth    Public
-
 const registerUser = asyncHandler(async (req, res) => {
   const { email, username, firstName, lastName, password, passwordConfirm } =
     req.body;
@@ -19,7 +17,6 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("An email address is required");
   }
-
   if (!username) {
     res.status(400);
     throw new Error("A username is required");
@@ -28,7 +25,6 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("You must enter a full name with a first and last name");
   }
-
   if (!password) {
     res.status(400);
     throw new Error("You must enter a password");
@@ -64,8 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   if (registeredUser) {
-    // if we call crypto without callback - a buffer is created
-    // we should convert it to hexadecimal string
+    // if we call crypto without callback - a buffer is created - we should convert it to hexadecimal string
     const verificationToken = randomBytes(32).toString("hex");
 
     let emailVerificationToken = await new VerificationToken({
@@ -73,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
       token: verificationToken,
     }).save();
 
-    const emailLink = `${domainURL}/api/v1/auth/verify/${emailVerificationToken.token}/${registerUser._id}`;
+    const emailLink = `${domainURL}/api/v1/auth/verify/${emailVerificationToken.token}/${registeredUser._id}`;
 
     const payload = {
       name: registeredUser.firstName,
@@ -95,6 +90,8 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 export default registerUser;
+
+// sample user
 
 // {
 //     "email":"alphaogilo@gmail.com",

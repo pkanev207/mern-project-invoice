@@ -13,8 +13,7 @@ const verifyResetTokenSchema = new Schema({
     type: Date,
     required: true,
     default: Date.now,
-    // expires in 15 minutes - powerful Mongo feature
-    // the document will auto delete itself
+    // expires in 15 minutes - powerful Mongo feature - the document will auto delete itself
     expires: 900,
   },
 });

@@ -1,7 +1,7 @@
 import "dotenv/config";
-import handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
+import handlebars from "handlebars";
 import { fileURLToPath } from "url";
 import transporter from "../helpers/emailTransport.js";
 import { systemLogs } from "./Logger.js";
@@ -12,7 +12,10 @@ const __dirname = path.dirname(__filename);
 const sendEmail = async (email, subject, payload, template) => {
   try {
     // in the current directory look for folder called templates
-    const sourceDirectory = fs.readFileSync(path.join(__dirname, template));
+    const sourceDirectory = fs.readFileSync(
+      path.join(__dirname, template),
+      "utf-8"
+    );
     // use handlebars to compile all the templates in this directory
     const compiledTemplate = handlebars.compile(sourceDirectory);
     const emailOptions = {
@@ -25,7 +28,7 @@ const sendEmail = async (email, subject, payload, template) => {
     await transporter.sendMail(emailOptions);
   } catch (err) {
     console.error(err);
-    systemLogs.error(`email not send: ${error}`);
+    systemLogs.error(`email not send: ${err}`);
   }
 };
 
