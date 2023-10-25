@@ -1,4 +1,4 @@
-# MERN Invoice Web App with Docker,NGINX and ReduxToolkit
+# MERN Invoice Web App with Docker, NGINX and ReduxToolkit
 
 A functional MERN Project with Docker, React and ReduxToolkit, NGINX, Express  
 
