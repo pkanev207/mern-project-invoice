@@ -10,28 +10,28 @@ import { systemLogs } from "./Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-let transporter;
-
-if (process.env.NODE_ENV === "development") {
-  transporter = nodemailer.createTransport({
-    host: "mailhog",
-    port: 1025,
-  });
-} else if (process.env.NODE_ENV === "production") {
-  // const mailgunAuth = {
-  // 	auth: {
-  // 		api_key: process.env.MAILGUN_API_KEY,
-  // 		domain: process.env.MAILGUN_DOMAIN,
-  // 	},
-  // };
-  // transporter = nodemailer.createTransport(mg(mailgunAuth));
-
-  transporter = nodemailer.createTransport({
-    // TODO: configure mailgun  in production
-  });
-}
 
 const sendEmail = async (email, subject, payload, template) => {
+  let transporter;
+  
+  if (process.env.NODE_ENV === "development") {
+    transporter = nodemailer.createTransport({
+      host: "mailhog",
+      port: 1025,
+    });
+  } else if (process.env.NODE_ENV === "production") {
+    // const mailgunAuth = {
+    // 	auth: {
+    // 		api_key: process.env.MAILGUN_API_KEY,
+    // 		domain: process.env.MAILGUN_DOMAIN,
+    // 	},
+    // };
+    // transporter = nodemailer.createTransport(mg(mailgunAuth));
+    transporter = nodemailer.createTransport({
+      // TODO: configure mailgun  in production
+    });
+  }
+
   try {
     // in the current directory look for folder called templates
     const sourceDirectory = fs.readFileSync(

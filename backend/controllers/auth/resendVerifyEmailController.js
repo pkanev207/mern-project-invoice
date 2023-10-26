@@ -49,8 +49,7 @@ const resendEmailVerificationToken = asyncHandler(async (req, res) => {
   }).save();
 
   const emailLink = `${domainUrl}/api/v1/auth/verify/${emailToken.token}/${user._id}`;
-  console.log(emailLink);
-  
+
   // a context for handlebars
   const payload = {
     name: user.firstName,
