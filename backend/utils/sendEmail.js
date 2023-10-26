@@ -3,11 +3,33 @@ import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
 import { fileURLToPath } from "url";
-import transporter from "../helpers/emailTransport.js";
+// import transporter from "../helpers/emailTransport.js";
+import nodemailer from "nodemailer";
+// import mg from "nodemailer-mailgun-transport";
 import { systemLogs } from "./Logger.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let transporter;
+
+if (process.env.NODE_ENV === "development") {
+  transporter = nodemailer.createTransport({
+    host: "mailhog",
+    port: 1025,
+  });
+} else if (process.env.NODE_ENV === "production") {
+  // const mailgunAuth = {
+  // 	auth: {
+  // 		api_key: process.env.MAILGUN_API_KEY,
+  // 		domain: process.env.MAILGUN_DOMAIN,
+  // 	},
+  // };
+  // transporter = nodemailer.createTransport(mg(mailgunAuth));
+
+  transporter = nodemailer.createTransport({
+    // TODO: configure mailgun  in production
+  });
+}
 
 const sendEmail = async (email, subject, payload, template) => {
   try {
