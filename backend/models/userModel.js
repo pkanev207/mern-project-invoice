@@ -77,7 +77,7 @@ const userSchema = new Schema(
     businessName: String,
     phoneNumber: {
       type: String,
-      default: "+254123456789", 
+      default: "+254123456789",
       validate: [
         validator.isMobilePhone,
         "Your mobile phone number must begin with a '+', followed by your  country code then actual number e.g +254123456789",
@@ -90,7 +90,7 @@ const userSchema = new Schema(
 
     roles: {
       type: [String],
-      default: [USER], 
+      default: [USER],
     },
     active: {
       type: Boolean,
@@ -110,19 +110,19 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-userSchema.pre("save", async function (next) { 
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
 
-  const salt = await bcrypt.genSalt(10);  
+  const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 
   this.passwordConfirm = undefined;
   next();
-}); 
+});
 
-userSchema.pre("save", async function (next) { 
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || this.isNew) {
     return next();
   }

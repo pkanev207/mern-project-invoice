@@ -29,7 +29,7 @@ const loginUser = asyncHandler(async (req, res) => {
       "You are not verified. Check your email, a verification email link was sent when you registered"
     );
   }
-  
+
   if (!existingUser.active) {
     res.status(400);
     throw new Error(
@@ -64,9 +64,11 @@ const loginUser = asyncHandler(async (req, res) => {
     // 2. the refresh token is stolen,
     // 3. reuse detection is needed to clear out all refresh tokens when a user logs in,
     if (cookies?.jwt) {
+      // a refresh token can only be used once and then it would be invalidated
       const refreshToken = cookies.jwt;
       const existingRefreshToken = await User.findOne({ refreshToken }).exec();
-      // if we find user without that refresh token it means we have detected refresh token reuse
+      // if we find user without that refresh token it means we have detected refresh token reuse -
+      // delete all refresh tokens to force the user to log in again, once his access token expires
       if (!existingRefreshToken) {
         newRefreshTokenArray = [];
       }
