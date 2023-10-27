@@ -1,30 +1,30 @@
 import { ADMIN, USER } from "../constants/index.js";
 
 const ROLES = {
-	User: USER,
-	Admin: ADMIN,
+  User: USER,
+  Admin: ADMIN,
 };
 
 const checkRole = (...allowedRoles) => {
-	return (req, res, next) => {
-		if (!req?.user && !req?.roles) {
-			res.status(401);
-			throw new Error("You are not authorized to use our platform");
-		}
+  return (req, res, next) => {
+    if (!req?.user && !req?.roles) {
+      res.status(401);
+      throw new Error("You are not authorized to use our platform");
+    }
+    console.log(req.roles);
+    const rolesArray = [...allowedRoles];
+    console.log(rolesArray);
+    const roleFound = req.roles
+      .map((role) => rolesArray.includes(role))
+      .find((value) => value === true);
 
-		const rolesArray = [...allowedRoles];
+    if (!roleFound) {
+      res.status(401);
+      throw new Error("You are not authorized to perform this request");
+    }
 
-		const roleFound = req.roles
-			.map((role) => rolesArray.includes(role))
-			.find((value) => value === true);
-           
-		if (!roleFound) {  
-			res.status(401);
-			throw new Error("You are not authorized to perform this request");
-		}
-
-		next();
-	};
+    next();
+  };
 };
 
 const role = { ROLES, checkRole };

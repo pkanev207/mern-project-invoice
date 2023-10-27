@@ -37,6 +37,18 @@ app.get("/api/v1/test", (req, res) => {
   res.json({ Hi: "Hello from the Invoice app!!!!" });
 });
 
+// ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default).
+// This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users.
+// xSee https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+// app.enable("trust proxy");
+// app.use((req, res, next) => {
+//   if (req.secure) {
+//     next();
+//   } else {
+//     res.redirect("https://" + req.headers.host + req.url);
+//   }
+// });
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", apiLimiter, userRoutes);
 
