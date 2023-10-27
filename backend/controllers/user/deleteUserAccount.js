@@ -18,7 +18,7 @@ const deleteUserAccount = asyncHandler(async (req, res) => {
     res.json({
       success: true,
       message: `User ${result.firstName} deleted successfully`,
-      result,
+      result
     });
   } else {
     res.status(404);
